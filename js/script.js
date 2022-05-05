@@ -232,6 +232,7 @@ window.addEventListener('DOMContentLoaded', () => {
    };
 
    const selector = '.menu .container';
+
    // Crate Cards
    new MenuCard(
       'img/tabs/vegy.jpg',
@@ -274,11 +275,22 @@ window.addEventListener('DOMContentLoaded', () => {
    };
 
    forms.forEach(form => {
-      postData(form);
+      bindPostData(form);
    });
 
+   const postData = async (url, data) => {
+      const res = await fetch(url, {
+         method: 'POST',
+         headers: {
+            'Content-type': 'application/json',
+         },
+         body: data,
+      });
 
-   function postData(form) {
+      return await res.json();
+   };
+
+   function bindPostData(form) {
       form.addEventListener('submit', (e) => {
          e.preventDefault();
 
@@ -292,19 +304,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
          const formData = new FormData(form);
 
-         const object = {};
-         formData.forEach((value, key) => {
-            object[key] = value;
-         });
+         const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-         fetch('server.php', {
-            method: 'POST',
-            headers: {
-               'Content-type': 'application/json',
-            },
-            body: JSON.stringify(object),
-         })
-            .then(data => data.text())
+         postData('http://localhost:3000/requests', json)
             .then(data => {
                console.log(data);
                showThanksModal(message.success);
