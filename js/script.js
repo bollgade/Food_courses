@@ -243,15 +243,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
    const selector = '.menu .container';
 
-   // Crate Cards
+   // Create Cards
    getResource('http://localhost:3000/menu')
       .then(data => {
          data.forEach(({ img, altimg, title, descr, price }) => {
             new MenuCard(img, altimg, title, descr, price, selector).render();
          });
       });
-
-   // Crate Cards
 
    // Forms
 
