@@ -43,8 +43,6 @@ window.addEventListener('DOMContentLoaded', () => {
    // Timer
 
    const deadLine = '2022-05-20T00:00:00'
-   const bug = new Date(deadLine);
-   console.log(bug);
 
    function getTimeRemaining(endtime) {
       const t = Date.parse(endtime) - Date.parse(new Date()),
