@@ -339,4 +339,77 @@ window.addEventListener('DOMContentLoaded', () => {
       }, 4000);
    };
 
+   // Offer__Slider
+   (function () {
+      const slider = document.querySelector('.offer .offer__slider'),
+         counter = slider.querySelector('.offer__slider-counter'),
+         counterTotal = counter.querySelector('#total'),
+         counterCurrent = counter.querySelector('#current'),
+         prevSlide = counter.querySelector('.offer__slider-prev'),
+         nextSlide = counter.querySelector('.offer__slider-next'),
+         slides = slider.querySelectorAll('.offer__slide');
+
+      function updateTotal(arr) {
+         counterTotal.textContent = getZero(arr.length);
+      };
+
+      function updateCurrent(num) {
+         counterCurrent.textContent = getZero(num);
+      };
+
+      function hideSlides() {
+         slides.forEach(item => {
+            item.classList.add('hide');
+            item.classList.remove('show');
+         });
+      };
+
+      function showSlide(arr, num = 0) {
+         arr[num].classList.add('show');
+         arr[num].classList.remove('hide');
+         updateCurrent(num + 1);
+      };
+
+      function hideSlide(arr, num = 0) {
+         arr[num].classList.remove('show');
+         arr[num].classList.add('hide');
+      };
+
+      function whatShowed() {
+         let num;
+         slides.forEach((item, index) => {
+            if (item.classList.contains('show')) {
+               num = index;
+            }
+         });
+         return num;
+      };
+
+      function showNextSlide(arr, num) {
+         hideSlide(arr, num)
+         num += 1;
+         if (num > arr.length - 1) {
+            num = 0;
+         }
+         showSlide(arr, num);
+      }
+
+      function showPrevSlide(arr, num) {
+         hideSlide(arr, num)
+         num -= 1;
+         if (num < 0) {
+            num = arr.length - 1;
+         }
+         showSlide(arr, num);
+      }
+
+      updateTotal(slides);
+      hideSlides();
+      showSlide(slides, 0);
+
+      prevSlide.addEventListener('click', () => showPrevSlide(slides, whatShowed()));
+      nextSlide.addEventListener('click', () => showNextSlide(slides, whatShowed()));
+
+
+   })();
 });
