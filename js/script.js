@@ -341,75 +341,152 @@ window.addEventListener('DOMContentLoaded', () => {
 
    // Offer__Slider
    (function () {
-      const slider = document.querySelector('.offer .offer__slider'),
-         counter = slider.querySelector('.offer__slider-counter'),
-         counterTotal = counter.querySelector('#total'),
-         counterCurrent = counter.querySelector('#current'),
-         prevSlide = counter.querySelector('.offer__slider-prev'),
-         nextSlide = counter.querySelector('.offer__slider-next'),
-         slides = slider.querySelectorAll('.offer__slide');
+      // Teacher's version 
+      const slides = document.querySelectorAll('.offer__slide'),
+         prev = document.querySelector('.offer__slider-prev'),
+         next = document.querySelector('.offer__slider-next'),
+         total = document.querySelector('#total'),
+         current = document.querySelector('#current'),
+         slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+         slidesField = document.querySelector('.offer__slider-inner'),
+         width = window.getComputedStyle(slidesWrapper).width;
 
-      function updateTotal(arr) {
-         counterTotal.textContent = getZero(arr.length);
+      let slideIndex = 1;
+      let offset = 0;
+
+      if (slides.length < 10) {
+         total.textContent = `0${slides.length}`;
+         current.textContent = `0${slideIndex}`;
+      } else {
+         total.textContent = slides.length;
+         current.textContent = slideIndex;
       };
 
-      function updateCurrent(num) {
-         counterCurrent.textContent = getZero(num);
-      };
+      slidesField.style.width = 100 * slides.length + '%';
+      slidesField.style.display = 'flex';
+      slidesField.style.transition = '0.5s all';
 
-      function hideSlides() {
-         slides.forEach(item => {
-            item.classList.add('hide');
-            item.classList.remove('show');
-         });
-      };
+      slidesWrapper.style.overflow = 'hidden';
 
-      function showSlide(arr, num = 0) {
-         arr[num].classList.add('show');
-         arr[num].classList.remove('hide');
-         updateCurrent(num + 1);
-      };
+      slides.forEach(slide => {
+         slide.style.width = width;
+      });
 
-      function hideSlide(arr, num = 0) {
-         arr[num].classList.remove('show');
-         arr[num].classList.add('hide');
-      };
+      next.addEventListener('click', () => {
+         if (offset == +width.slice(0, (width.length - 2)) * (slides.length - 1)) {
+            offset = 0;
+         } else {
+            offset += +width.slice(0, (width.length - 2));
+         }
 
-      function whatShowed() {
-         let num;
-         slides.forEach((item, index) => {
-            if (item.classList.contains('show')) {
-               num = index;
+         slidesField.style.transform = `translateX(-${offset}px)`;
+
+         if (slideIndex == slides.length) {
+            slideIndex = 1;
+         } else {
+            slideIndex++;
+         }
+
+         /*Переписал его ошибку. Для правильной работы в условии должно быть "slideIndex", как мне кажется. 
+         Он акцентировал внимание и сказал, что это здесь не важно. Но он не прав...*/
+         if (slides.length < 10) {
+            current.textContent = `0${slideIndex}`;
+         } else {
+            current.textContent = slideIndex;
+         };
+      });
+
+      prev.addEventListener('click', () => {
+         if (offset == 0) {
+            offset = +width.slice(0, (width.length - 2)) * (slides.length - 1)
+         } else {
+            offset -= +width.slice(0, (width.length - 2));
+         }
+
+         slidesField.style.transform = `translateX(-${offset}px)`;
+
+         if (slideIndex == 1) {
+            slideIndex = slides.length;
+         } else {
+            slideIndex--;
+         }
+
+         if (slides.length < 10) {
+            current.textContent = `0${slideIndex}`;
+         } else {
+            current.textContent = slideIndex;
+         };
+      });
+
+      /*My version for slider
+         const slider = document.querySelector('.offer .offer__slider'),
+            counter = slider.querySelector('.offer__slider-counter'),
+            counterTotal = counter.querySelector('#total'),
+            counterCurrent = counter.querySelector('#current'),
+            prevSlide = counter.querySelector('.offer__slider-prev'),
+            nextSlide = counter.querySelector('.offer__slider-next'),
+            slides = slider.querySelectorAll('.offer__slide');
+         function updateTotal(arr) {
+            counterTotal.textContent = getZero(arr.length);
+         };
+
+         function updateCurrent(num) {
+            counterCurrent.textContent = getZero(num);
+         };
+
+         function hideSlides() {
+            slides.forEach(item => {
+               item.classList.add('hide');
+               item.classList.remove('show');
+            });
+         };
+
+         function showSlide(arr, num = 0) {
+            arr[num].classList.add('show');
+            arr[num].classList.remove('hide');
+            updateCurrent(num + 1);
+         };
+
+         function hideSlide(arr, num = 0) {
+            arr[num].classList.remove('show');
+            arr[num].classList.add('hide');
+         };
+
+         function whatShowed() {
+            let num;
+            slides.forEach((item, index) => {
+               if (item.classList.contains('show')) {
+                  num = index;
+               }
+            });
+            return num;
+         };
+
+         function showNextSlide(arr, num) {
+            hideSlide(arr, num)
+            num += 1;
+            if (num > arr.length - 1) {
+               num = 0;
             }
-         });
-         return num;
-      };
-
-      function showNextSlide(arr, num) {
-         hideSlide(arr, num)
-         num += 1;
-         if (num > arr.length - 1) {
-            num = 0;
+            showSlide(arr, num);
          }
-         showSlide(arr, num);
-      }
 
-      function showPrevSlide(arr, num) {
-         hideSlide(arr, num)
-         num -= 1;
-         if (num < 0) {
-            num = arr.length - 1;
+         function showPrevSlide(arr, num) {
+            hideSlide(arr, num)
+            num -= 1;
+            if (num < 0) {
+               num = arr.length - 1;
+            }
+            showSlide(arr, num);
          }
-         showSlide(arr, num);
-      }
 
-      updateTotal(slides);
-      hideSlides();
-      showSlide(slides, 0);
+         updateTotal(slides);
+         hideSlides();
+         showSlide(slides, 0);
 
-      prevSlide.addEventListener('click', () => showPrevSlide(slides, whatShowed()));
-      nextSlide.addEventListener('click', () => showNextSlide(slides, whatShowed()));
-
-
+         prevSlide.addEventListener('click', () => showPrevSlide(slides, whatShowed()));
+         nextSlide.addEventListener('click', () => showNextSlide(slides, whatShowed()));
+      */
    })();
+
 });
