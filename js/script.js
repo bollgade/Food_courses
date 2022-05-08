@@ -46,6 +46,16 @@ window.addEventListener('DOMContentLoaded', () => {
       return await res.json();
    };
 
+   const getResource = async (url) => {
+      const res = await fetch(url);
+
+      if (!res.ok) {
+         throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+      }
+
+      return await res.json();
+   };
+
    //Tabs
    (function () {
       const tabs = document.querySelectorAll('.tabheader__item'),
@@ -162,7 +172,6 @@ window.addEventListener('DOMContentLoaded', () => {
          }
       });
 
-
       function showModalByScroll() {
          if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
             openModal();
@@ -245,16 +254,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
             this.parent.append(element);
          }
-      };
-
-      const getResource = async (url) => {
-         const res = await fetch(url);
-
-         if (!res.ok) {
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-         }
-
-         return await res.json();
       };
 
       const selector = '.menu .container';
@@ -361,13 +360,8 @@ window.addEventListener('DOMContentLoaded', () => {
       let slideIndex = 1;
       let offset = 0;
 
-      if (slides.length < 10) {
-         total.textContent = `0${slides.length}`;
-         current.textContent = `0${slideIndex}`;
-      } else {
-         total.textContent = slides.length;
-         current.textContent = slideIndex;
-      };
+      total.textContent = getZero(slides.length);
+      current.textContent = getZero(slideIndex);
 
       slidesField.style.width = 100 * slides.length + '%';
       slidesField.style.display = 'flex';
@@ -383,6 +377,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
       const indicators = document.createElement('ol'),
          dots = [];
+
+      function updateDotsOpacity() {
+         dots.forEach(dot => dot.style.opacity = '.5');
+         dots[slideIndex - 1].style.opacity = 1;
+      };
 
       indicators.classList.add('carousel-indicators');
       slider.append(indicators);
@@ -413,16 +412,9 @@ window.addEventListener('DOMContentLoaded', () => {
             slideIndex++;
          }
 
-         /*Переписал его ошибку. Для правильной работы в условии должно быть "slideIndex", как мне кажется. 
-         Он акцентировал внимание и сказал, что это здесь не важно. Но он не прав...*/
-         if (slides.length < 10) {
-            current.textContent = `0${slideIndex}`;
-         } else {
-            current.textContent = slideIndex;
-         };
+         current.textContent = getZero(slideIndex);
 
-         dots.forEach(dot => dot.style.opacity = '.5');
-         dots[slideIndex - 1].style.opacity = 1;
+         updateDotsOpacity();
       });
 
       prev.addEventListener('click', () => {
@@ -440,14 +432,9 @@ window.addEventListener('DOMContentLoaded', () => {
             slideIndex--;
          }
 
-         if (slides.length < 10) {
-            current.textContent = `0${slideIndex}`;
-         } else {
-            current.textContent = slideIndex;
-         };
+         current.textContent = getZero(slideIndex);
 
-         dots.forEach(dot => dot.style.opacity = '.5');
-         dots[slideIndex - 1].style.opacity = 1;
+         updateDotsOpacity();
       });
 
       dots.forEach(dot => {
@@ -459,14 +446,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
             slidesField.style.transform = `translateX(-${offset}px)`;
 
-            if (slides.length < 10) {
-               current.textContent = `0${slideIndex}`;
-            } else {
-               current.textContent = slideIndex;
-            };
+            current.textContent = getZero(slideIndex);
 
-            dots.forEach(dot => dot.style.opacity = '.5');
-            dots[slideIndex - 1].style.opacity = 1;
+            updateDotsOpacity();
          })
       })
 
